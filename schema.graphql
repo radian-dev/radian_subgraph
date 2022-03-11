@@ -20,3 +20,11 @@ type ExternalAddress @entity {
   networkID: BigInt!
   profile: Profile!
 }
+
+type Tag @entity {
+  id: ID!
+  tag: String!
+  cid: String!
+  provider: Bytes!
+  lastUpdate: BigInt!
+}

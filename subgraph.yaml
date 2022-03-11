@@ -3,11 +3,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: ProfileContractUpgradeable
+    name: ProfileContractUpgradable
     network: matic
     source:
       address: "0x7f7D6FA8597041FEe8D1cF869968360E5bc03fC8"
-      abi: ProfileContractUpgradeable
+      abi: ProfileContractUpgradable
       startBlock: 25824148 # block of contract creation
     mapping:
       kind: ethereum/events
@@ -24,8 +24,8 @@ dataSources:
         - RoleRevoked
         - UpdateProfile
       abis:
-        - name: ProfileContractUpgradeable
-          file: ./abis/ProfileContractUpgradeable.json
+        - name: ProfileContractUpgradable
+          file: ./abis/ProfileContractUpgradable.json
       eventHandlers:
         - event: AddAddressToProfile(indexed address,indexed address,uint256)
           handler: handleAddAddressToProfile
@@ -35,4 +35,30 @@ dataSources:
           handler: handleCreateProfile
         - event: UpdateProfile(indexed address,uint256,string)
           handler: handleUpdateProfile
-      file: ./src/mapping.ts
+      file: ./src/mapping_profile.ts
+  - kind: ethereum
+    name: Tag
+    network: matic
+    source:
+      address: "0xf8A8306A37c936d4998F9AD21A90761bAA466805"
+      abi: Tag
+      startBlock: 25691200 # block of contract creation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AddTag
+        - ClearTag
+        - RemoveTag
+      abis:
+        - name: Tag
+          file: ./abis/Tag.json
+      eventHandlers:
+        - event: AddTag(string[],string,address)
+          handler: handleAddTag
+        - event: CreateTag(string[],string,address)
+          handler: handleCreateTag
+        - event: RemoveTag(string[],string,address)
+          handler: handleRemoveTag
+      file: ./src/mapping_tag.ts
