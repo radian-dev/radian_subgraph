@@ -40,7 +40,7 @@ dataSources:
     name: Tag
     network: matic
     source:
-      address: "0xf8A8306A37c936d4998F9AD21A90761bAA466805"
+      address: "0xa1EcD35bA1fC4e7644B361F6e8C411443C809b91"
       abi: Tag
       startBlock: 25691200 # block of contract creation
     mapping:
