@@ -57,8 +57,8 @@ dataSources:
       eventHandlers:
         - event: AddTag(string[],string,address)
           handler: handleAddTag
-        - event: CreateTag(string[],string,address)
-          handler: handleCreateTag
+        - event: ClearTag(string[],string,address)
+          handler: handleClearTag
         - event: RemoveTag(string[],string,address)
           handler: handleRemoveTag
       file: ./src/mapping_tag.ts

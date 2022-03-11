@@ -9,7 +9,7 @@ import { Tag } from "../generated/schema"
 export function handleAddTag(event: AddTag): void {
 
   for ( let i = 0 ; i < event.params.tags.length ; i++){
-    let id =  event.params.provider.toString() + "/" + event.params.cid + "/" + event.params.tags[i];
+    let id =  event.params.provider.toHexString() + "/" + event.params.cid + "/" + event.params.tags[i];
     
     let tag = Tag.load(id);
     if (tag == null) {
@@ -25,7 +25,7 @@ export function handleAddTag(event: AddTag): void {
 
 export function handleClearTag(event: ClearTag): void {
   for ( let i = 0 ; i < event.params.tags.length ; i++){
-    let id =  event.params.provider.toString() + "/" + event.params.cid + "/" + event.params.tags[i];
+    let id =  event.params.provider.toHexString() + "/" + event.params.cid + "/" + event.params.tags[i];
     Tag.delete(id);
   }
 }
@@ -33,7 +33,7 @@ export function handleClearTag(event: ClearTag): void {
 export function handleRemoveTag(event: RemoveTag): void {
 
   for ( let i = 0 ; i < event.params.tags.length ; i++){
-    let id =  event.params.provider.toString() + "/" + event.params.cid + "/" + event.params.tags[i];
+    let id =  event.params.provider.toHexString() + "/" + event.params.cid + "/" + event.params.tags[i];
     Tag.delete(id);
   }
   
