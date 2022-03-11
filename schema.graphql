@@ -1,0 +1,22 @@
+type Profile @entity {
+  id: ID!
+  profileID: BigInt!
+  addresses: [Address!]! @derivedFrom(field: "profile")
+  "Stores the list of externalAddresses from non EVM compatible blockchains"
+  externalAddresses: [ExternalAddress]! @derivedFrom(field: "profile")
+  identityID: String!
+  verifyID: String
+}
+
+type Address @entity {
+  id: ID!
+  address: Bytes!
+  profile: Profile!
+}
+
+type ExternalAddress @entity {
+  id: ID!
+  externalAddress: String!
+  networkID: BigInt!
+  profile: Profile!
+}

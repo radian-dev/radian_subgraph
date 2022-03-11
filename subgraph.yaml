@@ -1,0 +1,38 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ProfileContractUpgradeable
+    network: matic
+    source:
+      address: "0x7f7D6FA8597041FEe8D1cF869968360E5bc03fC8"
+      abi: ProfileContractUpgradeable
+      startBlock: 25824148 # block of contract creation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Profile
+        - AddAddressToProfile
+        - AddExternalAddressToProfile
+        - AddProfileMapping
+        - CreateProfile
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - UpdateProfile
+      abis:
+        - name: ProfileContractUpgradeable
+          file: ./abis/ProfileContractUpgradeable.json
+      eventHandlers:
+        - event: AddAddressToProfile(indexed address,indexed address,uint256)
+          handler: handleAddAddressToProfile
+        - event: AddExternalAddressToProfile(indexed address,string,uint256,uint256)
+          handler: handleAddExternalAddressToProfile
+        - event: CreateProfile(indexed address,uint256,string)
+          handler: handleCreateProfile
+        - event: UpdateProfile(indexed address,uint256,string)
+          handler: handleUpdateProfile
+      file: ./src/mapping.ts
