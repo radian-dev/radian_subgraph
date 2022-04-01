@@ -19,9 +19,7 @@ export class Profile extends Entity {
 
     this.set("profileID", Value.fromBigInt(BigInt.zero()));
     this.set("identityID", Value.fromString(""));
-    
-    // this.set("addresses", Value.fromBytesArray([]));
-    // this.set("externalAddresses", Value.fromStringArray([])); 
+    this.set("lastUpdate", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -68,6 +66,15 @@ export class Profile extends Entity {
     this.set("identityID", Value.fromString(value));
   }
 
+  get lastUpdate(): BigInt {
+    let value = this.get("lastUpdate");
+    return value!.toBigInt();
+  }
+
+  set lastUpdate(value: BigInt) {
+    this.set("lastUpdate", Value.fromBigInt(value));
+  }
+  
   // get addresses(): Bytes[] {
   //   let value = this.get("addresses");
   //   return value!.toBytesArray();
@@ -95,6 +102,7 @@ export class Address extends Entity {
 
     this.set("address", Value.fromBytes(Bytes.empty())); 
     this.set("profile", Value.fromString(""));
+    this.set("lastUpdate", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -141,6 +149,15 @@ export class Address extends Entity {
     this.set("profile", Value.fromString(value));
   }
 
+  get lastUpdate(): BigInt {
+    let value = this.get("lastUpdate");
+    return value!.toBigInt();
+  }
+
+  set lastUpdate(value: BigInt) {
+    this.set("lastUpdate", Value.fromBigInt(value));
+  }
+
 }
 
 export class ExternalAddress extends Entity {
@@ -151,6 +168,7 @@ export class ExternalAddress extends Entity {
     this.set("externalAddress", Value.fromString(""));
     this.set("networkID", Value.fromBigInt(BigInt.zero()));
     this.set("profile", Value.fromString(""));
+    this.set("lastUpdate", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -206,6 +224,15 @@ export class ExternalAddress extends Entity {
     this.set("profile", Value.fromString(value));
   }
 
+  get lastUpdate(): BigInt {
+    let value = this.get("lastUpdate");
+    return value!.toBigInt();
+  }
+
+  set lastUpdate(value: BigInt) {
+    this.set("lastUpdate", Value.fromBigInt(value));
+  }
+
 }
 
 
@@ -217,6 +244,7 @@ export class Tag extends Entity {
     this.set("tag", Value.fromString(""));
     this.set("cid", Value.fromString(""));
     this.set("provider", Value.fromBytes(Bytes.empty()));
+    this.set("lastUpdate", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -274,6 +302,157 @@ export class Tag extends Entity {
 
   set provider(value: Bytes) {
     this.set("provider", Value.fromBytes(value));
+  }
+
+  get lastUpdate(): BigInt {
+    let value = this.get("lastUpdate");
+    return value!.toBigInt();
+  }
+
+  set lastUpdate(value: BigInt) {
+    this.set("lastUpdate", Value.fromBigInt(value));
+  }
+
+}
+
+export class ExternalNetwork extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+    this.set("networkType", Value.fromString(""));
+    this.set("networkID", Value.fromBigInt(BigInt.zero()));
+    this.set("enabled", Value.fromBoolean(true));
+    this.set("lastUpdate", Value.fromBigInt(BigInt.zero()));
+
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ExternalNetwork entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ExternalNetwork entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ExternalNetwork", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ExternalNetwork | null {
+    return changetype<ExternalNetwork | null>(store.get("ExternalNetwork", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get networkType(): string {
+    let value = this.get("networkType");
+    return value!.toString();
+  }
+
+  set networkType(value: string) {
+    this.set("networkType", Value.fromString(value));
+  }
+
+  get networkID(): BigInt {
+    let value = this.get("networkID");
+    return value!.toBigInt();
+  }
+
+  set networkID(value: BigInt) {
+    this.set("networkID", Value.fromBigInt(value));
+  }
+
+  get enabled(): bool {
+    let value = this.get("enabled");
+    return value!.toBoolean();
+  }
+
+  set enabled(value: bool) {
+    this.set("enabled", Value.fromBoolean(value));
+  }
+
+  get lastUpdate(): BigInt {
+    let value = this.get("lastUpdate");
+    return value!.toBigInt();
+  }
+
+  set lastUpdate(value: BigInt) {
+    this.set("lastUpdate", Value.fromBigInt(value));
+  }
+
+}
+
+
+export class ExternalProfile extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+    this.set("profileID", Value.fromBigInt(BigInt.zero()));
+    this.set("networkID", Value.fromBigInt(BigInt.zero()));
+    this.set("address", Value.fromBytes(Bytes.empty()));
+    this.set("lastUpdate", Value.fromBigInt(BigInt.zero()));
+
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ExternalProfile entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ExternalProfile entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ExternalProfile", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ExternalProfile | null {
+    return changetype<ExternalProfile | null>(store.get("ExternalProfile", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get profileID(): BigInt {
+    let value = this.get("profileID");
+    return value!.toBigInt();
+  }
+
+  set profileID(value: BigInt) {
+    this.set("profileID", Value.fromBigInt(value));
+  }
+
+  get networkID(): BigInt {
+    let value = this.get("networkID");
+    return value!.toBigInt();
+  }
+
+  set networkID(value: BigInt) {
+    this.set("networkID", Value.fromBigInt(value));
+  }
+
+  get address(): Bytes {
+    let value = this.get("address");
+    return value!.toBytes();
+  }
+
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
   }
 
   get lastUpdate(): BigInt {

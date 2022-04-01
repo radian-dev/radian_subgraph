@@ -3,18 +3,21 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: ProfileContractUpgradable
+    name: ProfileContractUpgradeable
     network: matic
     source:
-      address: "0x7f7D6FA8597041FEe8D1cF869968360E5bc03fC8"
-      abi: ProfileContractUpgradable
-      startBlock: 25824148 # block of contract creation
+      address: "0x395684AbDfe92aD405024B2DE8b522dc3d70Fe43"
+      abi: ProfileContractUpgradeable
+      startBlock: 25860580 # block of contract creation
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Profile
+        - AddExternalNetwork
+        - SetExternalNetworkState
+        - AddExternalProfileMapping
         - AddAddressToProfile
         - AddExternalAddressToProfile
         - AddProfileMapping
@@ -24,9 +27,15 @@ dataSources:
         - RoleRevoked
         - UpdateProfile
       abis:
-        - name: ProfileContractUpgradable
-          file: ./abis/ProfileContractUpgradable.json
+        - name: ProfileContractUpgradeable
+          file: ./abis/ProfileContractUpgradeable.json
       eventHandlers:
+        - event: AddExternalNetwork(indexed address,string,uint256)
+          handler: handleAddExternalNetwork
+        - event: AddExternalProfileMapping(indexed address,uint256,uint256)
+          handler: handleAddExternalProfileMapping
+        - event: SetExternalNetworkState(indexed address,uint256,bool)
+          handler: handleSetExternalNetworkState
         - event: AddAddressToProfile(indexed address,indexed address,uint256)
           handler: handleAddAddressToProfile
         - event: AddExternalAddressToProfile(indexed address,string,uint256,uint256)

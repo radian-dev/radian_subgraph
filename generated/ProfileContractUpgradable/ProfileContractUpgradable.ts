@@ -66,6 +66,58 @@ export class AddExternalAddressToProfile__Params {
   }
 }
 
+export class AddExternalNetwork extends ethereum.Event {
+  get params(): AddExternalNetwork__Params {
+    return new AddExternalNetwork__Params(this);
+  }
+}
+
+export class AddExternalNetwork__Params {
+  _event: AddExternalNetwork;
+
+  constructor(event: AddExternalNetwork) {
+    this._event = event;
+  }
+
+  get initiator(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get networkType(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get networkID(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class AddExternalProfileMapping extends ethereum.Event {
+  get params(): AddExternalProfileMapping__Params {
+    return new AddExternalProfileMapping__Params(this);
+  }
+}
+
+export class AddExternalProfileMapping__Params {
+  _event: AddExternalProfileMapping;
+
+  constructor(event: AddExternalProfileMapping) {
+    this._event = event;
+  }
+
+  get initiator(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get profileID(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get networkID(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class AddProfileMapping extends ethereum.Event {
   get params(): AddProfileMapping__Params {
     return new AddProfileMapping__Params(this);
@@ -192,6 +244,32 @@ export class RoleRevoked__Params {
   }
 }
 
+export class SetExternalNetworkState extends ethereum.Event {
+  get params(): SetExternalNetworkState__Params {
+    return new SetExternalNetworkState__Params(this);
+  }
+}
+
+export class SetExternalNetworkState__Params {
+  _event: SetExternalNetworkState;
+
+  constructor(event: SetExternalNetworkState) {
+    this._event = event;
+  }
+
+  get initiator(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get networkID(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get isEnabled(): boolean {
+    return this._event.parameters[2].value.toBoolean();
+  }
+}
+
 export class UpdateProfile extends ethereum.Event {
   get params(): UpdateProfile__Params {
     return new UpdateProfile__Params(this);
@@ -215,6 +293,23 @@ export class UpdateProfile__Params {
 
   get identityID(): string {
     return this._event.parameters[2].value.toString();
+  }
+}
+
+export class ProfileContractUpgradable__addressExternalProfileMappingResult {
+  value0: BigInt;
+  value1: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    return map;
   }
 }
 
@@ -279,23 +374,6 @@ export class ProfileContractUpgradable__getProfilesResultValue0Struct extends et
   }
 }
 
-export class ProfileContractUpgradable__supportedExternalNetworksResult {
-  value0: string;
-  value1: BigInt;
-
-  constructor(value0: string, value1: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromString(this.value0));
-    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    return map;
-  }
-}
-
 export class ProfileContractUpgradable extends ethereum.SmartContract {
   static bind(address: Address): ProfileContractUpgradable {
     return new ProfileContractUpgradable("ProfileContractUpgradable", address);
@@ -337,6 +415,43 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  addressExternalProfileMapping(
+    param0: Address
+  ): ProfileContractUpgradable__addressExternalProfileMappingResult {
+    let result = super.call(
+      "addressExternalProfileMapping",
+      "addressExternalProfileMapping(address):(uint256,uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return new ProfileContractUpgradable__addressExternalProfileMappingResult(
+      result[0].toBigInt(),
+      result[1].toBigInt()
+    );
+  }
+
+  try_addressExternalProfileMapping(
+    param0: Address
+  ): ethereum.CallResult<
+    ProfileContractUpgradable__addressExternalProfileMappingResult
+  > {
+    let result = super.tryCall(
+      "addressExternalProfileMapping",
+      "addressExternalProfileMapping(address):(uint256,uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new ProfileContractUpgradable__addressExternalProfileMappingResult(
+        value[0].toBigInt(),
+        value[1].toBigInt()
+      )
+    );
   }
 
   addressProfileMapping(param0: Address): BigInt {
@@ -409,7 +524,9 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
   try_externalAddressProfileMapping(
     param0: BigInt,
     param1: BigInt
-  ): ethereum.CallResult<ProfileContractUpgradable__externalAddressProfileMappingResult> {
+  ): ethereum.CallResult<
+    ProfileContractUpgradable__externalAddressProfileMappingResult
+  > {
     let result = super.tryCall(
       "externalAddressProfileMapping",
       "externalAddressProfileMapping(uint256,uint256):(string,uint256)",
@@ -480,6 +597,29 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  getAllEnabledNetworkIDs(): Array<BigInt> {
+    let result = super.call(
+      "getAllEnabledNetworkIDs",
+      "getAllEnabledNetworkIDs():(uint256[])",
+      []
+    );
+
+    return result[0].toBigIntArray();
+  }
+
+  try_getAllEnabledNetworkIDs(): ethereum.CallResult<Array<BigInt>> {
+    let result = super.tryCall(
+      "getAllEnabledNetworkIDs",
+      "getAllEnabledNetworkIDs():(uint256[])",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigIntArray());
+  }
+
   getContentID(profileID: BigInt): string {
     let result = super.call("getContentID", "getContentID(uint256):(string)", [
       ethereum.Value.fromUnsignedBigInt(profileID)
@@ -535,14 +675,16 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
       [ethereum.Value.fromAddress(owner)]
     );
 
-    return changetype<ProfileContractUpgradable__getProfilefromAddressResultValue0Struct>(
-      result[0].toTuple()
-    );
+    return changetype<
+      ProfileContractUpgradable__getProfilefromAddressResultValue0Struct
+    >(result[0].toTuple());
   }
 
   try_getProfilefromAddress(
     owner: Address
-  ): ethereum.CallResult<ProfileContractUpgradable__getProfilefromAddressResultValue0Struct> {
+  ): ethereum.CallResult<
+    ProfileContractUpgradable__getProfilefromAddressResultValue0Struct
+  > {
     let result = super.tryCall(
       "getProfilefromAddress",
       "getProfilefromAddress(address):((string))",
@@ -553,9 +695,9 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<ProfileContractUpgradable__getProfilefromAddressResultValue0Struct>(
-        value[0].toTuple()
-      )
+      changetype<
+        ProfileContractUpgradable__getProfilefromAddressResultValue0Struct
+      >(value[0].toTuple())
     );
   }
 
@@ -570,15 +712,17 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
 
     return new ProfileContractUpgradable__getProfilefromAddressV2Result(
       result[0].toBigInt(),
-      changetype<ProfileContractUpgradable__getProfilefromAddressV2ResultValue1Struct>(
-        result[1].toTuple()
-      )
+      changetype<
+        ProfileContractUpgradable__getProfilefromAddressV2ResultValue1Struct
+      >(result[1].toTuple())
     );
   }
 
   try_getProfilefromAddressV2(
     owner: Address
-  ): ethereum.CallResult<ProfileContractUpgradable__getProfilefromAddressV2Result> {
+  ): ethereum.CallResult<
+    ProfileContractUpgradable__getProfilefromAddressV2Result
+  > {
     let result = super.tryCall(
       "getProfilefromAddressV2",
       "getProfilefromAddressV2(address):(uint256,(string))",
@@ -591,9 +735,9 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       new ProfileContractUpgradable__getProfilefromAddressV2Result(
         value[0].toBigInt(),
-        changetype<ProfileContractUpgradable__getProfilefromAddressV2ResultValue1Struct>(
-          value[1].toTuple()
-        )
+        changetype<
+          ProfileContractUpgradable__getProfilefromAddressV2ResultValue1Struct
+        >(value[1].toTuple())
       )
     );
   }
@@ -607,14 +751,16 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
       [ethereum.Value.fromUnsignedBigInt(profileID)]
     );
 
-    return changetype<ProfileContractUpgradable__getProfilefromIDResultValue0Struct>(
-      result[0].toTuple()
-    );
+    return changetype<
+      ProfileContractUpgradable__getProfilefromIDResultValue0Struct
+    >(result[0].toTuple());
   }
 
   try_getProfilefromID(
     profileID: BigInt
-  ): ethereum.CallResult<ProfileContractUpgradable__getProfilefromIDResultValue0Struct> {
+  ): ethereum.CallResult<
+    ProfileContractUpgradable__getProfilefromIDResultValue0Struct
+  > {
     let result = super.tryCall(
       "getProfilefromID",
       "getProfilefromID(uint256):((string))",
@@ -644,13 +790,17 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
       ]
     );
 
-    return result[0].toTupleArray<ProfileContractUpgradable__getProfilesResultValue0Struct>();
+    return result[0].toTupleArray<
+      ProfileContractUpgradable__getProfilesResultValue0Struct
+    >();
   }
 
   try_getProfiles(
     limit: BigInt,
     skip: BigInt
-  ): ethereum.CallResult<Array<ProfileContractUpgradable__getProfilesResultValue0Struct>> {
+  ): ethereum.CallResult<
+    Array<ProfileContractUpgradable__getProfilesResultValue0Struct>
+  > {
     let result = super.tryCall(
       "getProfiles",
       "getProfiles(uint256,uint256):((string)[])",
@@ -664,7 +814,9 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<ProfileContractUpgradable__getProfilesResultValue0Struct>()
+      value[0].toTupleArray<
+        ProfileContractUpgradable__getProfilesResultValue0Struct
+      >()
     );
   }
 
@@ -733,6 +885,61 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getSupportedNetworkType(networkID: BigInt): string {
+    let result = super.call(
+      "getSupportedNetworkType",
+      "getSupportedNetworkType(uint256):(string)",
+      [ethereum.Value.fromUnsignedBigInt(networkID)]
+    );
+
+    return result[0].toString();
+  }
+
+  try_getSupportedNetworkType(networkID: BigInt): ethereum.CallResult<string> {
+    let result = super.tryCall(
+      "getSupportedNetworkType",
+      "getSupportedNetworkType(uint256):(string)",
+      [ethereum.Value.fromUnsignedBigInt(networkID)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  getSupportedNetworks(limit: BigInt, skip: BigInt): Array<string> {
+    let result = super.call(
+      "getSupportedNetworks",
+      "getSupportedNetworks(uint256,uint256):(string[])",
+      [
+        ethereum.Value.fromUnsignedBigInt(limit),
+        ethereum.Value.fromUnsignedBigInt(skip)
+      ]
+    );
+
+    return result[0].toStringArray();
+  }
+
+  try_getSupportedNetworks(
+    limit: BigInt,
+    skip: BigInt
+  ): ethereum.CallResult<Array<string>> {
+    let result = super.tryCall(
+      "getSupportedNetworks",
+      "getSupportedNetworks(uint256,uint256):(string[])",
+      [
+        ethereum.Value.fromUnsignedBigInt(limit),
+        ethereum.Value.fromUnsignedBigInt(skip)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toStringArray());
   }
 
   hasRole(role: Bytes, account: Address): boolean {
@@ -885,39 +1092,27 @@ export class ProfileContractUpgradable extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  supportedExternalNetworks(
-    param0: BigInt
-  ): ProfileContractUpgradable__supportedExternalNetworksResult {
+  supportedExternalNetworks(param0: BigInt): string {
     let result = super.call(
       "supportedExternalNetworks",
-      "supportedExternalNetworks(uint256):(string,uint256)",
+      "supportedExternalNetworks(uint256):(string)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
-    return new ProfileContractUpgradable__supportedExternalNetworksResult(
-      result[0].toString(),
-      result[1].toBigInt()
-    );
+    return result[0].toString();
   }
 
-  try_supportedExternalNetworks(
-    param0: BigInt
-  ): ethereum.CallResult<ProfileContractUpgradable__supportedExternalNetworksResult> {
+  try_supportedExternalNetworks(param0: BigInt): ethereum.CallResult<string> {
     let result = super.tryCall(
       "supportedExternalNetworks",
-      "supportedExternalNetworks(uint256):(string,uint256)",
+      "supportedExternalNetworks(uint256):(string)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new ProfileContractUpgradable__supportedExternalNetworksResult(
-        value[0].toString(),
-        value[1].toBigInt()
-      )
-    );
+    return ethereum.CallResult.fromValue(value[0].toString());
   }
 
   supportsInterface(interfaceId: Bytes): boolean {
@@ -1084,6 +1279,40 @@ export class AddExternalNetworkCall__Outputs {
   _call: AddExternalNetworkCall;
 
   constructor(call: AddExternalNetworkCall) {
+    this._call = call;
+  }
+}
+
+export class AddExternalProfileMappingCall extends ethereum.Call {
+  get inputs(): AddExternalProfileMappingCall__Inputs {
+    return new AddExternalProfileMappingCall__Inputs(this);
+  }
+
+  get outputs(): AddExternalProfileMappingCall__Outputs {
+    return new AddExternalProfileMappingCall__Outputs(this);
+  }
+}
+
+export class AddExternalProfileMappingCall__Inputs {
+  _call: AddExternalProfileMappingCall;
+
+  constructor(call: AddExternalProfileMappingCall) {
+    this._call = call;
+  }
+
+  get profileID(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get networkID(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class AddExternalProfileMappingCall__Outputs {
+  _call: AddExternalProfileMappingCall;
+
+  constructor(call: AddExternalProfileMappingCall) {
     this._call = call;
   }
 }

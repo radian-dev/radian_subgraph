@@ -6,12 +6,30 @@ type Profile @entity {
   externalAddresses: [ExternalAddress]! @derivedFrom(field: "profile")
   identityID: String!
   verifyID: String
+  lastUpdate: BigInt!
+}
+
+type ExternalNetwork @entity {
+  id: ID!
+  networkType: String!
+  networkID: BigInt!
+  enabled: Boolean!
+  lastUpdate: BigInt!
+}
+
+type ExternalProfile @entity {
+  id: ID!
+  profileID: BigInt!
+  networkID: BigInt!
+  address: Bytes!
+  lastUpdate: BigInt!
 }
 
 type Address @entity {
   id: ID!
   address: Bytes!
   profile: Profile!
+  lastUpdate: BigInt!
 }
 
 type ExternalAddress @entity {
@@ -19,6 +37,7 @@ type ExternalAddress @entity {
   externalAddress: String!
   networkID: BigInt!
   profile: Profile!
+  lastUpdate: BigInt!
 }
 
 type Tag @entity {
